@@ -33,6 +33,8 @@
             vehiculeButton = new Button();
             ajoutUtilisationButton = new Button();
             pictureBox1 = new PictureBox();
+            cbChoixGraphique = new ComboBox();
+            panelGraphique = new Panel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -76,12 +78,32 @@
             pictureBox1.TabIndex = 7;
             pictureBox1.TabStop = false;
             // 
+            // cbChoixGraphique
+            // 
+            cbChoixGraphique.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbChoixGraphique.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cbChoixGraphique.FormattingEnabled = true;
+            cbChoixGraphique.Items.AddRange(new object[] { "Distance Totale (km)", "Nombre de Trajets" });
+            cbChoixGraphique.Location = new Point(289, 30);
+            cbChoixGraphique.Name = "cbChoixGraphique";
+            cbChoixGraphique.Size = new Size(194, 31);
+            cbChoixGraphique.TabIndex = 8;
+            // 
+            // panelGraphique
+            // 
+            panelGraphique.Location = new Point(289, 82);
+            panelGraphique.Name = "panelGraphique";
+            panelGraphique.Size = new Size(981, 559);
+            panelGraphique.TabIndex = 9;
+            // 
             // Accueil
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(1282, 653);
+            Controls.Add(panelGraphique);
+            Controls.Add(cbChoixGraphique);
             Controls.Add(pictureBox1);
             Controls.Add(ajoutUtilisationButton);
             Controls.Add(vehiculeButton);
@@ -98,5 +120,7 @@
         private Button vehiculeButton;
         private Button ajoutUtilisationButton;
         private PictureBox pictureBox1;
+        private ComboBox cbChoixGraphique;
+        private Panel panelGraphique;
     }
 }

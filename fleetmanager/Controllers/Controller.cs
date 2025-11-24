@@ -137,5 +137,15 @@ namespace fleetmanager.Controllers
 
             return dataService.InsertUtilisation(userId, immatriculation, debut, fin, distance, commentaire);
         }
+        // --- MÉTHODES STATISTIQUES ---
+        public Dictionary<string, double> GetStatistiquesDistance()
+        {
+            return dataService.GetDistanceParUser();
+        }
+
+        public Dictionary<string, double> GetStatistiquesTrajets()
+        {
+            return dataService.GetTrajetsParUser();
+        }
     }
 }

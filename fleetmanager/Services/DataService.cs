@@ -321,5 +321,72 @@ namespace fleetmanager.Services
                 }
             }
         }
+        // --- STATISTIQUES POUR LE GRAPHIQUE ---
+
+        // 1. Distance totale par utilisateur
+        public Dictionary<string, double> GetDistanceParUser()
+        {
+            var stats = new Dictionary<string, double>();
+            // On joint la table 'utilisations' avec 'users' pour avoir le nom
+            string req = "SELECT u.username, SUM(ut.distance) as total " +
+                         "FROM utilisations ut " +
+                         "JOIN users u ON ut.user_id = u.user_id " +
+                         "GROUP BY u.username";
+
+            using (var msc = new MySqlConnection(cnxString))
+            {
+                try
+                {
+                    msc.Open();
+                    using (var cmd = new MySqlCommand(req, msc))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string user = reader.GetString("username");
+                            // On gère le cas où total est null
+                            double val = reader.IsDBNull(reader.GetOrdinal("total")) ? 0 : reader.GetDouble("total");
+                            stats.Add(user, val);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Erreur Stat Distance: " + e.Message);
+                }
+            }
+            return stats;
+        }
+
+        // 2. Nombre de trajets par utilisateur
+        public Dictionary<string, double> GetTrajetsParUser()
+        {
+            var stats = new Dictionary<string, double>();
+            string req = "SELECT u.username, COUNT(ut.id) as total " +
+                         "FROM utilisations ut " +
+                         "JOIN users u ON ut.user_id = u.user_id " +
+                         "GROUP BY u.username";
+
+            using (var msc = new MySqlConnection(cnxString))
+            {
+                try
+                {
+                    msc.Open();
+                    using (var cmd = new MySqlCommand(req, msc))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            stats.Add(reader.GetString("username"), reader.GetInt32("total"));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Erreur Stat Trajets: " + e.Message);
+                }
+            }
+            return stats;
+        }
     }
 }
