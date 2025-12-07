@@ -159,6 +159,79 @@ namespace fleetmanager.Services
             }
             return null;
         }
+        // --- AJOUTS POUR LA GESTION BCRYPT ---
+
+        /// <summary>
+        /// Récupère un utilisateur par son pseudo (sans vérifier le mot de passe).
+        /// C'est le Controller qui vérifiera le hash du mot de passe.
+        /// </summary>
+        public User GetUserByUsername(string username)
+        {
+            // On ne demande pas le password dans le WHERE, on le récupère juste
+            string req = "SELECT user_id, username, password, role FROM users WHERE username = @username";
+
+            using (var msc = GetConnection()) // Utilise votre méthode GetConnection existante
+            {
+                try
+                {
+                    // Pas besoin de msc.Open() si GetConnection() l'ouvre déjà
+                    // Sinon ajoutez msc.Open();
+
+                    using (var cmd = new MySqlCommand(req, msc))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new User
+                                {
+                                    UserId = reader.GetInt32("user_id"),
+                                    Username = reader.GetString("username"),
+                                    // On récupère le mot de passe (hashé ou clair) pour le donner au Controller
+                                    Password = reader.GetString("password"),
+                                    Role = reader.GetString("role")
+                                };
+                            }
+                        }
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("Erreur SQL (GetUserByUsername): " + e.Message);
+                }
+            }
+            return null; // Retourne null si l'utilisateur n'existe pas
+        }
+
+        /// <summary>
+        /// Met à jour uniquement le mot de passe d'un utilisateur (utilisé pour la migration automatique).
+        /// </summary>
+        public bool UpdatePassword(int userId, string newHashedPassword)
+        {
+            string req = "UPDATE users SET password = @password WHERE user_id = @user_id";
+
+            using (var msc = GetConnection())
+            {
+                try
+                {
+                    using (var cmd = new MySqlCommand(req, msc))
+                    {
+                        cmd.Parameters.AddWithValue("@password", newHashedPassword);
+                        cmd.Parameters.AddWithValue("@user_id", userId);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine("Erreur SQL (UpdatePassword): " + e.Message);
+                    return false;
+                }
+            }
+        }
 
         // ---------------------------- VEHICULES ----------------------------
         // Méthode sélection véhicules

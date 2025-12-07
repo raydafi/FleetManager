@@ -1,6 +1,5 @@
 ﻿using fleetmanager.Controllers;
 using fleetmanager.Models;
-using fleetmanager.Views;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -9,12 +8,13 @@ namespace fleetmanager.Views
 {
     public partial class ManageUsers : Form
     {
-        private User utilisateurActuel; // L'admin qui est connecté
+        private User utilisateurActuel;
         private Controller controller;
 
         public ManageUsers(User user)
         {
             InitializeComponent();
+
             this.utilisateurActuel = user;
             this.controller = new Controller();
 
@@ -23,10 +23,8 @@ namespace fleetmanager.Views
 
             ConfigureGrid();
 
+            // On charge les utilisateurs au démarrage
             this.Load += (s, e) => ChargerUtilisateurs();
-            this.btnAdd.Click += BtnAdd_Click;
-            this.btnEdit.Click += BtnEdit_Click;
-            this.btnDelete.Click += BtnDelete_Click;
         }
 
         private void ConfigureGrid()
@@ -45,7 +43,7 @@ namespace fleetmanager.Views
                 List<User> users = controller.GetTousLesUtilisateurs();
                 usersDataGridView.DataSource = users;
 
-                // Optionnel : Masquer le mot de passe dans la grille pour la sécurité
+                // Masquer le mot de passe (Important car maintenant ce sont des hashs longs)
                 if (usersDataGridView.Columns["Password"] != null)
                 {
                     usersDataGridView.Columns["Password"].Visible = false;
@@ -57,18 +55,20 @@ namespace fleetmanager.Views
             }
         }
 
+        // --- GESTION DES BOUTONS ---
+
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            // Ouvre le formulaire en mode AJOUT (null)
+            // Mode AJOUT (null)
+            // IMPORTANT : Dans UserForm.cs, au moment de sauvegarder, 
+            // assurez-vous d'utiliser BCrypt.HashPassword(txtPassword.Text)
+            // avant d'appeler controller.CreerNouvelUtilisateur
             UserForm form = new UserForm(null);
 
-            form.FormClosed += (s, args) =>
-            {
-                this.Show();
-                ChargerUtilisateurs(); // Rafraichir après fermeture
-            };
+            form.ShowDialog();
 
-            form.ShowDialog(); // ShowDialog bloque la fenêtre parent tant que l'enfant est ouvert
+            // Une fois fermée, on recharge la liste
+            ChargerUtilisateurs();
         }
 
         private void BtnEdit_Click(object sender, EventArgs e)
@@ -76,16 +76,12 @@ namespace fleetmanager.Views
             User selectedUser = GetSelectedUser();
             if (selectedUser != null)
             {
-                // Ouvre le formulaire en mode EDITION
+                // Mode ÉDITION
                 UserForm form = new UserForm(selectedUser);
 
-                form.FormClosed += (s, args) =>
-                {
-                    this.Show();
-                    ChargerUtilisateurs();
-                };
-
                 form.ShowDialog();
+
+                ChargerUtilisateurs();
             }
         }
 
@@ -94,7 +90,7 @@ namespace fleetmanager.Views
             User selectedUser = GetSelectedUser();
             if (selectedUser != null)
             {
-                // Sécurité : On empêche de se supprimer soi-même !
+                // Sécurité : Empêcher l'auto-suppression
                 if (selectedUser.UserId == utilisateurActuel.UserId)
                 {
                     MessageBox.Show("Vous ne pouvez pas supprimer votre propre compte !", "Action interdite", MessageBoxButtons.OK, MessageBoxIcon.Warning);

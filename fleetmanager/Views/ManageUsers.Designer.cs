@@ -46,6 +46,7 @@
             btnDelete.TabIndex = 7;
             btnDelete.Text = "Supprimer la ligne séléctionnée";
             btnDelete.UseVisualStyleBackColor = false;
+            btnDelete.Click += BtnDelete_Click;
             // 
             // btnEdit
             // 
@@ -58,6 +59,7 @@
             btnEdit.TabIndex = 6;
             btnEdit.Text = "Modifier la ligne séléctionnée";
             btnEdit.UseVisualStyleBackColor = false;
+            btnEdit.Click += BtnEdit_Click;
             // 
             // btnAdd
             // 
@@ -70,6 +72,7 @@
             btnAdd.TabIndex = 5;
             btnAdd.Text = "+ Ajouter un utilisateur";
             btnAdd.UseVisualStyleBackColor = false;
+            btnAdd.Click += BtnAdd_Click;
             // 
             // usersDataGridView
             // 

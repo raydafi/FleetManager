@@ -29,44 +29,14 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Accueil));
-            manageUsersButton = new Button();
-            vehiculeButton = new Button();
-            ajoutUtilisationButton = new Button();
             pictureBox1 = new PictureBox();
-            cbChoixGraphique = new ComboBox();
-            panelGraphique = new Panel();
+            ajoutUtilisationButton = new Button();
+            vehiculeButton = new Button();
+            userButton = new Button();
+            dgvResume = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResume).BeginInit();
             SuspendLayout();
-            // 
-            // manageUsersButton
-            // 
-            manageUsersButton.Location = new Point(12, 381);
-            manageUsersButton.Name = "manageUsersButton";
-            manageUsersButton.Size = new Size(260, 50);
-            manageUsersButton.TabIndex = 0;
-            manageUsersButton.Text = "Administration des utilisateurs";
-            manageUsersButton.UseVisualStyleBackColor = true;
-            manageUsersButton.Click += manageUsersButton_Click;
-            // 
-            // vehiculeButton
-            // 
-            vehiculeButton.Location = new Point(12, 325);
-            vehiculeButton.Name = "vehiculeButton";
-            vehiculeButton.Size = new Size(260, 50);
-            vehiculeButton.TabIndex = 1;
-            vehiculeButton.Text = "Afficher les véhicules";
-            vehiculeButton.UseVisualStyleBackColor = true;
-            vehiculeButton.Click += vehiculeButton_Click;
-            // 
-            // ajoutUtilisationButton
-            // 
-            ajoutUtilisationButton.Location = new Point(12, 269);
-            ajoutUtilisationButton.Name = "ajoutUtilisationButton";
-            ajoutUtilisationButton.Size = new Size(260, 50);
-            ajoutUtilisationButton.TabIndex = 2;
-            ajoutUtilisationButton.Text = "Ajouter une utilisation de véhicule";
-            ajoutUtilisationButton.UseVisualStyleBackColor = true;
-            ajoutUtilisationButton.Click += ajoutUtilisationButton_Click;
             // 
             // pictureBox1
             // 
@@ -78,49 +48,71 @@
             pictureBox1.TabIndex = 7;
             pictureBox1.TabStop = false;
             // 
-            // cbChoixGraphique
+            // ajoutUtilisationButton
             // 
-            cbChoixGraphique.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbChoixGraphique.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cbChoixGraphique.FormattingEnabled = true;
-            cbChoixGraphique.Items.AddRange(new object[] { "Distance Totale (km)", "Nombre de Trajets" });
-            cbChoixGraphique.Location = new Point(289, 30);
-            cbChoixGraphique.Name = "cbChoixGraphique";
-            cbChoixGraphique.Size = new Size(194, 31);
-            cbChoixGraphique.TabIndex = 8;
+            ajoutUtilisationButton.Location = new Point(69, 221);
+            ajoutUtilisationButton.Name = "ajoutUtilisationButton";
+            ajoutUtilisationButton.Size = new Size(214, 47);
+            ajoutUtilisationButton.TabIndex = 8;
+            ajoutUtilisationButton.Text = "Ajouter une utilisation";
+            ajoutUtilisationButton.UseVisualStyleBackColor = true;
             // 
-            // panelGraphique
+            // vehiculeButton
             // 
-            panelGraphique.Location = new Point(289, 82);
-            panelGraphique.Name = "panelGraphique";
-            panelGraphique.Size = new Size(981, 559);
-            panelGraphique.TabIndex = 9;
+            vehiculeButton.Location = new Point(69, 274);
+            vehiculeButton.Name = "vehiculeButton";
+            vehiculeButton.Size = new Size(214, 47);
+            vehiculeButton.TabIndex = 9;
+            vehiculeButton.Text = "Gérer les véhicules";
+            vehiculeButton.UseVisualStyleBackColor = true;
+            // 
+            // userButton
+            // 
+            userButton.Location = new Point(69, 327);
+            userButton.Name = "userButton";
+            userButton.Size = new Size(214, 47);
+            userButton.TabIndex = 10;
+            userButton.Text = "Gérer les utilisateurs";
+            userButton.UseVisualStyleBackColor = true;
+            // 
+            // dgvResume
+            // 
+            dgvResume.AllowUserToAddRows = false;
+            dgvResume.BackgroundColor = Color.White;
+            dgvResume.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvResume.GridColor = Color.DodgerBlue;
+            dgvResume.Location = new Point(338, 35);
+            dgvResume.Name = "dgvResume";
+            dgvResume.ReadOnly = true;
+            dgvResume.RowHeadersVisible = false;
+            dgvResume.RowHeadersWidth = 51;
+            dgvResume.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvResume.Size = new Size(944, 618);
+            dgvResume.TabIndex = 11;
             // 
             // Accueil
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.White;
             ClientSize = new Size(1282, 653);
-            Controls.Add(panelGraphique);
-            Controls.Add(cbChoixGraphique);
-            Controls.Add(pictureBox1);
-            Controls.Add(ajoutUtilisationButton);
+            Controls.Add(dgvResume);
+            Controls.Add(userButton);
             Controls.Add(vehiculeButton);
-            Controls.Add(manageUsersButton);
+            Controls.Add(ajoutUtilisationButton);
+            Controls.Add(pictureBox1);
             Name = "Accueil";
             Text = "Accueil";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvResume).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Button manageUsersButton;
-        private Button vehiculeButton;
-        private Button ajoutUtilisationButton;
         private PictureBox pictureBox1;
-        private ComboBox cbChoixGraphique;
-        private Panel panelGraphique;
+        private Button ajoutUtilisationButton;
+        private Button vehiculeButton;
+        private Button userButton;
+        private DataGridView dgvResume;
     }
 }

@@ -87,7 +87,6 @@
             btnAnnuler.TabIndex = 4;
             btnAnnuler.Text = "Annuler";
             btnAnnuler.UseVisualStyleBackColor = true;
-            btnAnnuler.Click += btnAnnuler_Click;
             // 
             // label1
             // 

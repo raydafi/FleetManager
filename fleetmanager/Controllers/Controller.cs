@@ -50,13 +50,51 @@ namespace fleetmanager.Controllers
             return dataService.DeleteUser(id);
         }
 
+        // Dans Controller.cs
         public User TenterConnexion(string username, string password)
         {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password)) return null;
+
+            // 1. Récupérer l'utilisateur par son pseudo
+            User user = dataService.GetUserByUsername(username);
+
+            if (user == null) return null;
+
+            // --- CORRECTION DU BUG ---
+
+            // Étape A : On essaie de vérifier si c'est un Hash valide
+            try
             {
-                return null;
+                if (BCrypt.Net.BCrypt.Verify(password, user.Password))
+                {
+                    return user; // C'est un bon hash, connexion réussie !
+                }
             }
-            return dataService.ValiderUtilisateur(username, password);
+            catch (BCrypt.Net.SaltParseException)
+            {
+                // Si on arrive ici, c'est que user.Password (ex: "1234") n'est PAS un hash.
+                // On ignore l'erreur et on continue vers l'étape B pour voir si c'est du texte clair.
+            }
+
+            // Étape B : Migration (Texte clair -> Hash)
+            // On vérifie si le mot de passe correspond au texte clair
+            if (user.Password == password)
+            {
+                // C'est le bon mot de passe, mais il n'était pas crypté.
+                // 1. On le crypte
+                string passwordHashed = BCrypt.Net.BCrypt.HashPassword(password);
+
+                // 2. On met à jour la base de données pour la prochaine fois
+                dataService.UpdatePassword(user.UserId, passwordHashed);
+
+                // 3. On met à jour l'objet en mémoire
+                user.Password = passwordHashed;
+
+                return user;
+            }
+
+            // Si ni le hash ni le texte clair ne correspondent
+            return null;
         }
 
         // --- NOUVELLES MÉTHODES AJOUTÉES ---
@@ -146,6 +184,54 @@ namespace fleetmanager.Controllers
         public Dictionary<string, double> GetStatistiquesTrajets()
         {
             return dataService.GetTrajetsParUser();
+        }
+        // Dans fleetmanager.Controllers.Controller
+
+        public DataTable GetStatistiquesVehiculesDetallees()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Immatriculation", typeof(string));
+            table.Columns.Add("Modèle", typeof(string));
+            table.Columns.Add("Distance Totale (km)", typeof(double));
+            table.Columns.Add("Nb Trajets", typeof(int));
+            table.Columns.Add("Coût Estimé (€)", typeof(double));
+
+            using (var conn = dataService.GetConnection())
+            {
+                // --- MODIFICATION ICI : Table 'utilisations' ---
+                string query = @"
+            SELECT 
+                v.immatriculation, 
+                v.modele, 
+                v.prix_litre,
+                COUNT(u.id) as nb_trajets, 
+                SUM(u.distance) as total_distance
+            FROM vehicules v
+            LEFT JOIN utilisations u ON v.immatriculation = u.immatriculation
+            GROUP BY v.immatriculation, v.modele, v.prix_litre";
+
+                using (var cmd = new MySqlConnector.MySqlCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string immat = reader.GetString("immatriculation");
+                        string modele = reader.GetString("modele");
+
+                        // On gère les NULL si le véhicule n'a jamais été utilisé
+                        double dist = reader.IsDBNull(reader.GetOrdinal("total_distance")) ? 0 : reader.GetDouble("total_distance");
+                        int nb = reader.IsDBNull(reader.GetOrdinal("nb_trajets")) ? 0 : reader.GetInt32("nb_trajets");
+                        double prixLitre = reader.GetDouble("prix_litre");
+
+                        // Calcul du coût (Moyenne 7L/100km * PrixLitre * Distance)
+                        double consommationMoyenne = 7.0;
+                        double cout = (dist / 100.0) * consommationMoyenne * prixLitre;
+
+                        table.Rows.Add(immat, modele, dist, nb, Math.Round(cout, 2));
+                    }
+                }
+            }
+            return table;
         }
     }
 }
